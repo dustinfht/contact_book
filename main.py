@@ -1,6 +1,10 @@
 from database_connector import DatabaseConnector
 from colors import Color
 import sys
+import utils
+from configuraton import Configuration
+
+configuration = None
 
 
 def main_loop():
@@ -27,12 +31,12 @@ def context_show_entries():
 
 def context_add_entry():
     print(f"{Color.INFORMATION}Please enter following information about your new friend:{Color.RESET}")
-    print(f"Please enter the {Color.MAGENTA}last name{Color.RESET}:")
-    last_name = input("> ")
+    print(configuration.message_enter_last_name)
+    last_name = get_last_name()
     print(f"Please enter the {Color.MAGENTA}first name{Color.RESET}:")
-    first_name = input("> ")
+    first_name = get_first_name()
     print(f"Please enter the {Color.MAGENTA}phone number{Color.RESET}:")
-    number = input("> ")
+    number = get_phone_number()
     dbConnector = DatabaseConnector("sqlite.db")
     dbConnector.connect()
     dbConnector.insert_entry(last_name, first_name, number)
@@ -40,10 +44,35 @@ def context_add_entry():
     print(f"{Color.SUCCESS}Your friend {first_name} was successfully added to your contacts!{Color.RESET}")
 
 
+def get_last_name():
+    last_name = input("> ").strip()
+    if not last_name:
+        print(f"Your friends name must not be empty. Please enter his last name:")
+        return get_last_name()
+    return last_name
+
+
+def get_first_name():
+    first_name = input("> ").strip()
+    if not first_name:
+        print(f"Your friends name must not be empty. Please enter his first name:")
+        return get_first_name()
+    return first_name
+
+
+def get_phone_number():
+    phone_number = input("> ").strip()
+    if not phone_number:
+        print(f"Your friends phone number must not be empty. Please enter his phone number")
+        return get_phone_number()
+    return phone_number
+
+
 def context_delete_entry():
     print(f"{Color.INFORMATION}Please enter the id of the contact you want to delete:{Color.RESET}")
     contact_id = input("> ")
-    if not is_int(contact_id):
+
+    if not utils.is_int(contact_id):
         print("That is not an integer! Please only insert whole numbers.")
         context_delete_entry()
 
@@ -65,15 +94,10 @@ def quitProgram():
     sys.exit(0)
 
 
-def is_int(string):
-    try:
-        int(string)
-        return True
-    except ValueError:
-        return False
-
-
 if __name__ == '__main__':
+    configuration = Configuration()
+    configuration.load()
+
     connector = DatabaseConnector("sqlite.db")
     connector.connect()
     connector.setup_tables()

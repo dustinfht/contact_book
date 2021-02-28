@@ -1,12 +1,13 @@
 import sqlite3
 from prettytable import PrettyTable
+import os
 
 
 class DatabaseConnector:
     table_name = "contacts"
 
     def __init__(self, database_name):
-        self.database_name = database_name
+        self.database_name = os.path.join(os.path.dirname(__file__), database_name)
         self.connection = None
         self.cursor = None
 
@@ -24,7 +25,8 @@ class DatabaseConnector:
         self.cursor.execute(sql)
 
     def insert_entry(self, last_name, first_name, phone_number):
-        sql = f"INSERT INTO {self.table_name} (last_name, first_name, phone_number, last_updated) VALUES ('{last_name}', '{first_name}', '{phone_number}', datetime('now'));"
+        sql = f"INSERT INTO {self.table_name} (last_name, first_name, phone_number, last_updated)" \
+              f" VALUES ('{last_name}', '{first_name}', '{phone_number}', datetime('now'));"
         self.cursor.execute(sql)
         self.connection.commit()
 
