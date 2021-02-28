@@ -1,4 +1,5 @@
 import sqlite3
+from prettytable import PrettyTable
 
 
 class DatabaseConnector:
@@ -15,6 +16,7 @@ class DatabaseConnector:
 
     def setup_tables(self):
         sql = f"CREATE TABLE IF NOT EXISTS {self.table_name}(" \
+              "id INTEGER PRIMARY KEY, " \
               "last_name TEXT, " \
               "first_name TEXT, " \
               "phone_number TEXT, " \
@@ -30,9 +32,18 @@ class DatabaseConnector:
         sql = f"SELECT * FROM {self.table_name};"
         self.cursor.execute(sql)
 
+        table = PrettyTable()
+        table.field_names = ["ID", "Last Name", "First Name", "Number", "Updated on"]
+
         for entry in self.cursor:
-            print(entry[0], entry[1], entry[2], entry[3])
+            table.add_row([entry[0], entry[1], entry[2], entry[3], entry[4]])
+
+        print(table)
+
+    def delete_entry(self, contact_id):
+        sql = f"DELETE FROM {self.table_name} WHERE id = {contact_id};"
+        self.cursor.execute(sql)
+        self.connection.commit()
 
     def disconnect(self):
-        print("Disconnect from database" + ("" if self.connection is not None else " which is null") + ".")
         self.connection.close()
