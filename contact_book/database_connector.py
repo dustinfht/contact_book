@@ -1,13 +1,14 @@
 import sqlite3
 from prettytable import PrettyTable
 import os
+import contact
 
 
 class DatabaseConnector:
     table_name = "contacts"
 
     def __init__(self, database_name):
-        self.database_name = os.path.join(os.path.dirname(__file__), database_name)
+        self.database_name = os.path.join(os.path.dirname(os.path.dirname(__file__)), database_name)
         self.connection = None
         self.cursor = None
 
@@ -38,7 +39,9 @@ class DatabaseConnector:
         table.field_names = ["ID", "Last Name", "First Name", "Number", "Updated on"]
 
         for entry in self.cursor:
-            table.add_row([entry[0], entry[1], entry[2], entry[3], entry[4]])
+            contact1 = contact.create(entry)
+            table.add_row([contact1.contact_id, contact1.last_name, contact1.first_name, contact1.phone_number,
+                           contact1.last_updated])
 
         print(table)
 
@@ -46,6 +49,13 @@ class DatabaseConnector:
         sql = f"DELETE FROM {self.table_name} WHERE id = {contact_id};"
         self.cursor.execute(sql)
         self.connection.commit()
+
+    def get_entry(self, contact_id):
+        sql = f"SELECT * FROM {self.table_name} WHERE id = {contact_id} LIMIT 1;"
+        self.cursor.execute(sql)
+
+        for entry in self.cursor:
+            return contact.create(entry)
 
     def disconnect(self):
         self.connection.close()

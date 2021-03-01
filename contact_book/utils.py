@@ -9,7 +9,7 @@ def is_int(string):
         return False
 
 
-def parse_string(string):
+def parse_string_color(string):
     if type(string) is not str:
         return string
 
@@ -17,3 +17,6 @@ def parse_string(string):
         string = string.replace(f"<color:{key}>", Color.elements.get(key))
 
     return string
+
+
+

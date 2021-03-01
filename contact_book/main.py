@@ -4,24 +4,24 @@ import sys
 import utils
 from configuraton import Configuration
 
-configuration = None
+configuration = Configuration()
 
 
 def main_loop():
     while True:
-        print("Please select one option: [q]uit, [s]how entries, [n]ew entry, [d]elete entry, [u]pdate entry")
-        user_selection = input("> ").lower()
-        if user_selection == "q":
+        print(configuration.message_select_context)
+        user_selection = get_input().lower()
+        if user_selection == "q" or user_selection == "quit":
             quitProgram()
-        elif user_selection == "s":
-            context_show_entries()
-        elif user_selection == "n":
-            context_add_entry()
-        elif user_selection == "d":
-            context_delete_entry()
+        elif user_selection == "l" or user_selection == "list":
+            show_list_entries_context()
+        elif user_selection == "n" or user_selection == "new":
+            show_add_entry_context()
+        elif user_selection == "d" or user_selection == "delete":
+            show_delete_entry_context()
 
 
-def context_show_entries():
+def show_list_entries_context():
     print(f"{Color.INFORMATION}Showing all book-entries:{Color.RESET}")
     dbConnector = DatabaseConnector("sqlite.db")
     dbConnector.connect()
@@ -29,8 +29,8 @@ def context_show_entries():
     dbConnector.disconnect()
 
 
-def context_add_entry():
-    print(f"{Color.INFORMATION}Please enter following information about your new friend:{Color.RESET}")
+def show_add_entry_context():
+    print(f"Please enter following information about your new friend:{Color.RESET}")
     print(configuration.message_enter_last_name)
     last_name = get_last_name()
     print(f"Please enter the {Color.MAGENTA}first name{Color.RESET}:")
@@ -45,7 +45,7 @@ def context_add_entry():
 
 
 def get_last_name():
-    last_name = input("> ").strip()
+    last_name = get_input().strip()
     if not last_name:
         print(f"Your friends name must not be empty. Please enter his last name:")
         return get_last_name()
@@ -53,7 +53,7 @@ def get_last_name():
 
 
 def get_first_name():
-    first_name = input("> ").strip()
+    first_name = get_input().strip()
     if not first_name:
         print(f"Your friends name must not be empty. Please enter his first name:")
         return get_first_name()
@@ -61,28 +61,34 @@ def get_first_name():
 
 
 def get_phone_number():
-    phone_number = input("> ").strip()
+    phone_number = get_input().strip()
     if not phone_number:
         print(f"Your friends phone number must not be empty. Please enter his phone number")
         return get_phone_number()
     return phone_number
 
 
-def context_delete_entry():
+def show_delete_entry_context():
     print(f"{Color.INFORMATION}Please enter the id of the contact you want to delete:{Color.RESET}")
-    contact_id = input("> ")
+    contact_id = get_input()
 
     if not utils.is_int(contact_id):
         print("That is not an integer! Please only insert whole numbers.")
-        context_delete_entry()
+        show_delete_entry_context()
 
     contact_id = int(contact_id)
     if not contact_id > 0:
         print("That is not a valid id! Please only insert numbers greater than 0.")
-        context_delete_entry()
+        show_delete_entry_context()
 
     dbConnector = DatabaseConnector("sqlite.db")
     dbConnector.connect()
+    contact = dbConnector.get_entry(contact_id)
+    if contact is None:
+        print(f"{Color.ERROR}There is no contact with the id {contact_id}.")
+        dbConnector.disconnect()
+        show_delete_entry_context()
+
     dbConnector.delete_entry(contact_id)
     dbConnector.disconnect()
 
@@ -94,20 +100,25 @@ def quitProgram():
     sys.exit(0)
 
 
-if __name__ == '__main__':
-    configuration = Configuration()
-    configuration.load()
+def get_input():
+    print(f"{configuration.settings_input}", end='')
+    user_input = input()
+    print(Color.RESET, end='')
+    return user_input
 
+
+if __name__ == '__main__':
     connector = DatabaseConnector("sqlite.db")
     connector.connect()
     connector.setup_tables()
     connector.disconnect()
 
-    print()
-    print("=======================================================================================================")
-    print("Hello my friend! Haven't seen you for a while. I've wondered if you are okay.\nBut beside that I still "
-          "managed your contacts. Let them know you are still alive!")
-    print("=======================================================================================================")
+    # print()
+    # print("=======================================================================================================")
+    # print("Hello my friend! Haven't seen you for a while. I've wondered if you are okay.\nBut beside that I still "
+    #       "managed your contacts. Let them know you are still alive!")
+    # print("=======================================================================================================")
+    print(configuration.message_greetings)
     try:
         main_loop()
     except KeyboardInterrupt:
