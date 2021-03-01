@@ -30,24 +30,38 @@ def show_list_entries_context():
 
 
 def show_add_entry_context():
-    print(f"Please enter following information about your new friend:{Color.RESET}")
-    print(configuration.message_enter_last_name)
-    last_name = get_last_name()
-    print(f"Please enter the {Color.MAGENTA}first name{Color.RESET}:")
-    first_name = get_first_name()
-    print(f"Please enter the {Color.MAGENTA}phone number{Color.RESET}:")
-    number = get_phone_number()
+    print(configuration.message_create_contact)
+    last_name = None
+    first_name = None
+    number = None
+    while True:
+        if last_name is None:
+            print(configuration.message_enter_last_name)
+            last_name = get_last_name()
+        elif first_name is None:
+            print(configuration.message_enter_first_name)
+            first_name = get_first_name()
+        elif number is None:
+            print(configuration.message_enter_phone_number)
+            number = get_phone_number()
+        else:
+            break
+
+        if last_name == "cancel" or first_name == "cancel" or number == "cancel":
+            print(configuration.message_cancelled_create_contact)
+            return
+
     dbConnector = DatabaseConnector("sqlite.db")
     dbConnector.connect()
     dbConnector.insert_entry(last_name, first_name, number)
     dbConnector.disconnect()
-    print(f"{Color.SUCCESS}Your friend {first_name} was successfully added to your contacts!{Color.RESET}")
+    print(configuration.message_created_contact)
 
 
 def get_last_name():
     last_name = get_input().strip()
     if not last_name:
-        print(f"Your friends name must not be empty. Please enter his last name:")
+        print(configuration.message_last_name_must_not_be_empty)
         return get_last_name()
     return last_name
 
@@ -55,7 +69,7 @@ def get_last_name():
 def get_first_name():
     first_name = get_input().strip()
     if not first_name:
-        print(f"Your friends name must not be empty. Please enter his first name:")
+        print(configuration.message_first_name_must_not_be_empty)
         return get_first_name()
     return first_name
 
@@ -63,13 +77,13 @@ def get_first_name():
 def get_phone_number():
     phone_number = get_input().strip()
     if not phone_number:
-        print(f"Your friends phone number must not be empty. Please enter his phone number")
+        print(configuration.message_phone_number_must_not_be_empty)
         return get_phone_number()
     return phone_number
 
 
 def show_delete_entry_context():
-    print(f"{Color.INFORMATION}Please enter the id of the contact you want to delete:{Color.RESET}")
+    print(configuration.message_enter_delete_contact_id)
     contact_id = get_input()
 
     if not utils.is_int(contact_id):

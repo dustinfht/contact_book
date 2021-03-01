@@ -17,6 +17,3 @@ def parse_string_color(string):
         string = string.replace(f"<color:{key}>", Color.elements.get(key))
 
     return string
-
-
-

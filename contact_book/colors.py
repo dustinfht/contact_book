@@ -28,4 +28,6 @@ class Color:
     elements = {"reset": RESET, "black": BLACK, "bright_black": BRIGHT_BLACK, "red": RED, "bright_red": BRIGHT_RED,
                 "green": GREEN, "bright_green": BRIGHT_GREEN, "yellow": YELLOW, "bright_yellow": BRIGHT_YELLOW,
                 "blue": BLUE, "bright_blue": BRIGHT_BLUE, "magenta": MAGENTA, "bright_magenta": BRIGHT_MAGENTA,
-                "cyan": CYAN, "bright_cyan": BRIGHT_CYAN, "white": WHITE, "bright_white": BRIGHT_WHITE}
+                "cyan": CYAN, "bright_cyan": BRIGHT_CYAN, "white": WHITE, "bright_white": BRIGHT_WHITE, "bold": BOLD,
+                "underline": UNDERLINE, "reversed": REVERSED, "information": INFORMATION, "success": SUCCESS,
+                "error": ERROR}
